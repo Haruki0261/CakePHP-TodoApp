@@ -1,0 +1,47 @@
+version: "3.9"
+
+services:
+  app:
+    build:
+      context: ./docker/web
+      dockerfile: Dockerfile
+    volumes:
+      - ./src/:/app
+    networks:
+      - app-network
+
+  apache:
+    image: httpd:alpine
+    ports:
+      - "8080:80"
+    volumes:
+      - ./src/:/usr/local/apache2/htdocs
+      - ./docker/apache/httpd.conf:/usr/local/apache2/conf/httpd.conf
+    depends_on:
+      - app
+    networks:
+      - app-network
+
+  database:
+    build:
+      context: ./docker/db
+      dockerfile: Dockerfile
+    ports:
+      - 3306:3306
+    environment:
+      MYSQL_DATABASE: database
+      MYSQL_USER: user
+      MYSQL_PASSWORD: password
+      MYSQL_ROOT_PASSWORD: password
+      TZ: "Asia/Tokyo"
+    volumes:
+      - mysql-volume:/var/lib/mysql
+    networks:
+      - app-network
+
+volumes:
+  mysql-volume:
+
+networks:
+  app-network:
+    driver: bridge
