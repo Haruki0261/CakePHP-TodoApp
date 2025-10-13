@@ -40,7 +40,7 @@ class TodosTable extends Table
             ->integer('id')
             ->allowEmptyString('id', null, 'create');
 
-        $validator˜
+        $validator
             ->scalar('title')
             ->maxLength('title', 255)
             ->requirePresence('title', 'create')
@@ -78,5 +78,12 @@ class TodosTable extends Table
         }
 
         return false;
+    }
+
+    public function deleteTodo(int $id)
+    {
+        $todo = $this->get($id);
+
+        return $this->delete($todo);
     }
 }

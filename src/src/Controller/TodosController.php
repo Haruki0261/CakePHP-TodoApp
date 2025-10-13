@@ -81,16 +81,18 @@ class TodosController extends AppController
 
     public function delete($id = null)
     {
-        $this->request->allowMethod(['delete']);
+        $this->request->allowMethod(['post', 'delete']);
 
         $todo = $this->Todos->get($id);
 
-        if ($this->Todos->delete($todo)) {
+        if ($this->Todos->deleteTodo($todo['id'])) {
             $this->Flash->success(__('Todo has been deleted.'));
 
-            return $this->redirect(['action' => 'index']);
+        } else {
+            $this->Flash->error(__('Unable to delete the todo.'));
         }
 
-        $this->Flash->error(__('Unable to delete the todo.'));
+        return $this->redirect(['action' => 'index']);
     }
 }
+

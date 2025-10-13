@@ -91,6 +91,13 @@
         .btn-edit:hover {
             background: #1e7e34;
         }
+        .btn-delete {
+            background: #dc3545;
+            color: white;
+        }
+        .btn-delete:hover {
+            background: #c82333;
+        }
     </style>
 </head>
 <body>
@@ -127,6 +134,7 @@
                     <div class="todo-date">作成日: <?= $todo->modified->format('Y-m-d H:i') ?></div>
                     <div class="todo-actions">
                         <a href="/todos/edit/<?= $todo->id ?>" class="btn btn-edit">編集</a>
+                        <?= $this->Form->postLink('削除', ['action' => 'delete', $todo->id], ['class' => 'btn btn-delete']) ?>
                     </div>
                 </div>
             <?php endforeach; ?>
