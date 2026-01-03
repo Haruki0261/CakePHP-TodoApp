@@ -1,0 +1,30 @@
+<?php
+declare(strict_types=1);
+
+namespace App\Test\Fixture;
+
+use Cake\TestSuite\Fixture\TestFixture;
+
+/**
+ * TodoTagsFixture
+ */
+class TodoTagsFixture extends TestFixture
+{
+    /**
+     * Init method
+     *
+     * @return void
+     */
+    public function init(): void
+    {
+        $this->records = [
+            [
+                'id' => 1,
+                'todo_id' => 1,
+                'tag_id' => 1,
+                'created' => '2025-12-21 00:59:14',
+            ],
+        ];
+        parent::init();
+    }
+}
