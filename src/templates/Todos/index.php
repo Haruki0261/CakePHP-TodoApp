@@ -98,6 +98,31 @@
         .btn-delete:hover {
             background: #c82333;
         }
+        .tag-selector {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+        .tag-button {
+            display: inline-block;
+            cursor: pointer;
+            margin: 0;
+        }
+        .tag-label {
+            background: #e0e0e0;
+            padding: 8px 15px;
+            border-radius: 20px;
+            display: inline-block;
+            transition: all 0.3s ease;
+            user-select: none;
+        }
+        .tag-label:hover {
+            background: #d0d0d0;
+        }
+        .tag-button input:checked + .tag-label {
+            background: #007bff;
+            color: white;
+        }
     </style>
 </head>
 <body>
@@ -105,23 +130,38 @@
 
     <div class="todo-form">
         <h2>新しいTodoを追加</h2>
-        <?= $this->Form->create(null, ['url' => '/todos/create', 'method' => 'post']) ?>
-        <div class="form-group">
-            <?= $this->Form->label('title', 'タイトル') ?>
-            <?= $this->Form->text('title', ['required' => true]) ?>
-        </div>
+        <?= $this->Form->create(null, ['url' => ['action' => 'create']]) ?>
+            <div class="form-group">
+                <?= $this->Form->label('title', 'タイトル') ?>
+                <?= $this->Form->text('title', ['required' => true]) ?>
+            </div>
 
-        <div class="form-group">
-            <?= $this->Form->label('content', '内容') ?>
-            <?= $this->Form->textarea('content', ['required' => true]) ?>
-        </div>
+            <div class="form-group">
+                <?= $this->Form->label('tags', 'タグ') ?>
+                <div class="tag-selector">
+                    <?php foreach ($tags as $tag): ?>
+                        <label class="tag-button">
+                            <input type="checkbox" name="tags[]" value="<?= $tag['id'] ?>" style="display: none;">
+                            <span class="tag-label"><?= h($tag['name']) ?></span>
+                        </label>
+                    <?php endforeach; ?>
+                </div>
+            </div>
 
-        <?= $this->Form->button('追加', ['type' => 'submit']) ?>
+            <div class="form-group">
+                <?= $this->Form->label('content', '内容') ?>
+                <?= $this->Form->textarea('content', ['required' => true]) ?>
+            </div>
+
+            <?= $this->Form->button('追加', ['type' => 'submit']) ?>
         <?= $this->Form->end() ?>
     </div>
 
     <div class="todos-list">
         <h2>Todo一覧</h2>
+        <div>
+            <a href="/tags/add">タグ追加</a>
+        </div>
         <?php if (!empty($todos)): ?>
             <?php foreach ($todos as $todo): ?>
                 <div class="todo-item <?= $todo->completed ? 'completed' : '' ?>">

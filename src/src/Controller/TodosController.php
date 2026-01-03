@@ -3,52 +3,45 @@ declare(strict_types=1);
 
 namespace App\Controller;
 
-use DateTime;
-use App\Model\Table\TodosTable;
-
+// use App\Model\Table\TagsTable;
 
 /**
  * Todos Controller
+* @property \App\Model\Table\TagsTable $Tags
+* @property \App\Model\Table\TodoTagsTable $TodoTags
  *
  */
 class TodosController extends AppController
 {
-    protected $todos;
-
     public function initialize(): void
     {
         parent::initialize();
-        $this->todos = $this->getTableLocator()->get('Todos');
-
+        $this->Tags = $this->fetchTable('Tags');
+        $this->TodoTags = $this->fetchTable('TodoTags');
     }
 
     public function index()
     {
-        $todos = $this->Todos->find('all')->orderByDesc('created');
-        $this->set(compact('todos'));
-    }
+        $todos = $this->Todos->find()->contain(['Tags'])->orderByDesc('created');
+        $tags = $this->Tags->find()->orderByDesc('created')->toArray();
 
-    public function view($id = null)
-    {
-        $todo = $this->Todos->get($id);
-        $this->set(compact('todo'));
+        $this->set(compact('todos', 'tags'));
     }
 
     public function create()
     {
-        $this->request->allowMethod(['post']);
-
         if ($this->request->is('post')) {
             $todo = $this->Todos->createTodo($this->request->getData());
+            $tags = $this->request->getData('tags');
 
-            if ($todo) {
-                $this->Flash->success(__('Todo has been saved.'));
-
-                return $this->redirect(['action' => 'index']);
+            foreach($tags as $tag) {
+                $this->TodoTags->createTodoTag((int)$todo->id, (int)$tag);
             }
 
-            $this->Flash->error(__('Unable to add the todo.'));
+            $this->Flash->success(__('Todo has been saved.'));
         }
+
+        return $this->redirect(['action' => 'index']);
     }
 
     public function edit($id = null)

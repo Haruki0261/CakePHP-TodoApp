@@ -26,6 +26,13 @@ class TodosTable extends Table
         $this->setPrimaryKey('id');
 
         $this->addBehavior('Timestamp');
+        $this->hasMany('TodoTags', [
+            'foreignKey' => 'todo_id',
+        ]);
+
+        $this->belongsToMany('Tags', [
+            'through' => 'TodoTags',
+        ]);
     }
 
     /**
@@ -68,7 +75,6 @@ class TodosTable extends Table
     {
         $todo = $this->newEmptyEntity();
 
-        // completedフィールドにデフォルト値を設定
         $data['completed'] = $data['completed'] ?? false;
 
         $todo = $this->patchEntity($todo, $data);
