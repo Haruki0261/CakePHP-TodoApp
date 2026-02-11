@@ -2,7 +2,6 @@
 declare(strict_types=1);
 
 namespace App\Controller;
-
 /**
  * Tags Controller
  *
@@ -10,6 +9,11 @@ namespace App\Controller;
  */
 class TagsController extends AppController
 {
+    public function initialize(): void
+    {
+        parent::initialize();
+        $this->Tags = $this->fetchTable('Tags');
+    }
     /**
      * Index method
      *
@@ -45,16 +49,16 @@ class TagsController extends AppController
     {
         $tag = $this->Tags->newEmptyEntity();
         if ($this->request->is('post')) {
-            $tag = $this->Tags->patchEntity($tag, $this->request->getData());
+            $tag = $this->Tags->newEntity($this->request->getData());
             if ($this->Tags->save($tag)) {
                 $this->Flash->success(__('The tag has been saved.'));
 
                 return $this->redirect(['action' => 'index']);
+            } else {
+                $this->Flash->error(__('The tag could not be saved. Please, try again.'));
             }
-            $this->Flash->error(__('The tag could not be saved. Please, try again.'));
         }
-        $todos = $this->Tags->Todos->find('list', ['limit' => 200])->all();
-        $this->set(compact('tag', 'todos'));
+        $this->set(compact('tag'));
     }
 
     /**

@@ -70,9 +70,13 @@ class TagsTable extends Table
 
         $validator
             ->scalar('color')
-            ->maxLength('color', 7)
-            ->requirePresence('color', 'create')
-            ->notEmptyString('color');
+            ->maxLength('color', 7, '色は7文字以内で入力してください')
+            ->requirePresence('color', 'create', '色を入力してください')
+            ->notEmptyString('color', '色を入力してください')
+            ->add('color', 'validHexColor', [
+                'rule' => ['custom', '/^#[0-9A-Fa-f]{6}$/'],
+                'message' => '色は6桁の16進数で入力してください',
+            ]);
 
         return $validator;
     }

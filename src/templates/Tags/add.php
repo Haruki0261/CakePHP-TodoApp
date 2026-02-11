@@ -15,15 +15,9 @@
     <div class="column column-80">
         <div class="tags form content">
             <?= $this->Form->create($tag) ?>
-            <fieldset>
-                <legend><?= __('Add Tag') ?></legend>
-                <?php
-                    echo $this->Form->control('name');
-                    echo $this->Form->control('color');
-                    echo $this->Form->control('todos._ids', ['options' => $todos]);
-                ?>
-            </fieldset>
-            <?= $this->Form->button(__('Submit')) ?>
+                <?= $this->Form->control('name', ['label' => 'タグ名', 'required' => true]) ?>
+                <?= $this->Form->control('color', ['label' => '色', 'required' => true, 'type' => 'color']) ?>
+            <?= $this->Form->button('追加', ['type' => 'submit']) ?>
             <?= $this->Form->end() ?>
         </div>
     </div>
