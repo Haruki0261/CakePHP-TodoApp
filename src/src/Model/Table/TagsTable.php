@@ -63,16 +63,20 @@ class TagsTable extends Table
     {
         $validator
             ->scalar('name')
-            ->maxLength('name', 50)
-            ->requirePresence('name', 'create')
-            ->notEmptyString('name')
-            ->add('name', 'unique', ['rule' => 'validateUnique', 'provider' => 'table']);
+            ->maxLength('name', 50, 'タグ名は50文字以内で入力してください')
+            ->requirePresence('name', 'create', 'タグ名を入力してください')
+            ->notEmptyString('name', 'タグ名を入力してください')
+            ->add('name', 'unique', ['rule' => 'validateUnique', 'provider' => 'table', 'message' => 'このタグ名はすでに使われています']);
 
         $validator
             ->scalar('color')
-            ->maxLength('color', 7)
-            ->requirePresence('color', 'create')
-            ->notEmptyString('color');
+            ->maxLength('color', 7, '色は7文字以内で入力してください')
+            ->requirePresence('color', 'create', '色を入力してください')
+            ->notEmptyString('color', '色を入力してください')
+            ->add('color', 'validHexColor', [
+                'rule' => ['custom', '/^#[0-9A-Fa-f]{6}$/'],
+                'message' => '色は6桁の16進数で入力してください',
+            ]);
 
         return $validator;
     }

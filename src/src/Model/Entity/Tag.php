@@ -30,8 +30,5 @@ class Tag extends Entity
     protected array $_accessible = [
         'name' => true,
         'color' => true,
-        'created' => true,
-        'modified' => true,
-        'todo_tags' => true,
     ];
 }
