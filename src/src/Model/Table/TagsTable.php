@@ -63,10 +63,10 @@ class TagsTable extends Table
     {
         $validator
             ->scalar('name')
-            ->maxLength('name', 50)
-            ->requirePresence('name', 'create')
-            ->notEmptyString('name')
-            ->add('name', 'unique', ['rule' => 'validateUnique', 'provider' => 'table']);
+            ->maxLength('name', 50, 'タグ名は50文字以内で入力してください')
+            ->requirePresence('name', 'create', 'タグ名を入力してください')
+            ->notEmptyString('name', 'タグ名を入力してください')
+            ->add('name', 'unique', ['rule' => 'validateUnique', 'provider' => 'table', 'message' => 'このタグ名はすでに使われています']);
 
         $validator
             ->scalar('color')

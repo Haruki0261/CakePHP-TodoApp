@@ -83,13 +83,13 @@ class TagsController extends AppController
     }
 
     /**
-     * Delete method
+     * 削除メソッド
      *
-     * @param string|null $id Tag id.
+     * @param int $id Tag id.
+     *
      * @return \Cake\Http\Response|null Redirects to index.
-     * @throws \Cake\Datasource\Exception\RecordNotFoundException When record not found.
      */
-    public function delete($id = null)
+    public function delete(int $id)
     {
         $this->request->allowMethod(['post', 'delete']);
         $tag = $this->Tags->get($id);
