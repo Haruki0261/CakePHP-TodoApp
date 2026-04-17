@@ -2,7 +2,6 @@
 /**
  * @var \App\View\AppView $this
  * @var \App\Model\Entity\Tag $tag
- * @var string[]|\Cake\Collection\CollectionInterface $todos
  */
 ?>
 <div class="row">
@@ -20,15 +19,11 @@
     <div class="column column-80">
         <div class="tags form content">
             <?= $this->Form->create($tag) ?>
-            <fieldset>
-                <legend><?= __('Edit Tag') ?></legend>
-                <?php
-                    echo $this->Form->control('name');
-                    echo $this->Form->control('color');
-                    echo $this->Form->control('todos._ids', ['options' => $todos]);
-                ?>
-            </fieldset>
-            <?= $this->Form->button(__('Submit')) ?>
+            <div class="form-group">
+                <?= $this->Form->control('name', ['label' => 'タグ名', 'required' => true]) ?>
+                <?= $this->Form->control('color', ['label' => '色', 'required' => true, 'type' => 'color']) ?>
+            </div>
+            <?= $this->Form->button('更新', ['type' => 'submit']) ?>
             <?= $this->Form->end() ?>
         </div>
     </div>

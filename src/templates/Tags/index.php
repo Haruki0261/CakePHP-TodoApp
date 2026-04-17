@@ -26,9 +26,9 @@
                     <td><?= h($tag->name) ?></td>
                     <td><?= h($tag->color) ?></td>
                     <td class="actions">
-                        <?= $this->Html->link(__('Edit'), ['action' => 'edit', $tag->id]) ?>
+                        <?= $this->Html->link(__('編集'), ['action' => 'edit', $tag->id]) ?>
                         <?= $this->Form->postLink(
-                            __('Delete'),
+                            __('削除'),
                             ['action' => 'delete', $tag->id],
                             [
                                 'method' => 'delete',

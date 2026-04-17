@@ -17,6 +17,7 @@ class TagsController extends AppController
     public function initialize(): void
     {
         parent::initialize();
+        $this->Tags = $this->fetchTable('Tags');
         $this->tagsService = new TagsService($this->Tags);
     }
 
@@ -85,7 +86,7 @@ class TagsController extends AppController
     {
         $tag = $this->Tags->newEmptyEntity();
         if ($this->request->is('post')) {
-            $tag = $this->Tags->patchEntity($tag, $this->request->getData());
+            $tag = $this->Tags->newEntity($this->request->getData());
             if ($this->Tags->save($tag)) {
                 $this->Flash->success(__('The tag has been saved.'));
 
@@ -93,20 +94,19 @@ class TagsController extends AppController
             }
             $this->Flash->error(__('The tag could not be saved. Please, try again.'));
         }
-        $todos = $this->Tags->Todos->find('list', ['limit' => 200])->all();
-        $this->set(compact('tag', 'todos'));
+        $this->set(compact('tag'));
     }
 
     /**
-     * Edit method
+     * 編集メソッド
      *
-     * @param string|null $id Tag id.
-     * @return \Cake\Http\Response|null|void Redirects on successful edit, renders view otherwise.
-     * @throws \Cake\Datasource\Exception\RecordNotFoundException When record not found.
+     * @param int $id Tag id.
+     *
+     * @return \Cake\Http\Response|void
      */
-    public function edit($id = null)
+    public function edit(int $id)
     {
-        $tag = $this->Tags->get($id, ['contain' => ['Todos']]);
+        $tag = $this->Tags->get($id);
         if ($this->request->is(['patch', 'post', 'put'])) {
             $tag = $this->Tags->patchEntity($tag, $this->request->getData());
             if ($this->Tags->save($tag)) {
@@ -116,18 +116,17 @@ class TagsController extends AppController
             }
             $this->Flash->error(__('The tag could not be saved. Please, try again.'));
         }
-        $todos = $this->Tags->Todos->find('list', ['limit' => 200])->all();
-        $this->set(compact('tag', 'todos'));
+        $this->set(compact('tag'));
     }
 
     /**
-     * Delete method
+     * 削除メソッド
      *
-     * @param string|null $id Tag id.
+     * @param int $id Tag id.
+     *
      * @return \Cake\Http\Response|null Redirects to index.
-     * @throws \Cake\Datasource\Exception\RecordNotFoundException When record not found.
      */
-    public function delete($id = null)
+    public function delete(int $id)
     {
         $this->request->allowMethod(['post', 'delete']);
         $tag = $this->Tags->get($id);
