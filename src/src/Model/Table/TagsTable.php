@@ -94,4 +94,19 @@ class TagsTable extends Table
 
         return $rules;
     }
+
+    /**
+     * 名前が部分一致するタグを名前順で最大10件返す。
+     *
+     * @return array<\App\Model\Entity\Tag>
+     */
+    public function getTagsByName(string $name): array
+    {
+        return $this->find()
+            ->where(['name LIKE' => '%' . $name . '%'])
+            ->orderByAsc('name')
+            ->limit(10)
+            ->all()
+            ->toList();
+    }
 }

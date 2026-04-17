@@ -22,7 +22,7 @@
             <tbody>
                 <?php foreach ($tags as $tag): ?>
                 <tr>
-                    <td><?= $this->Html->link($tag->id, ['action' => 'view', $tag->id]) ?> </td>
+                    <td><?= h($tag->id) ?></td>
                     <td><?= h($tag->name) ?></td>
                     <td><?= h($tag->color) ?></td>
                     <td class="actions">

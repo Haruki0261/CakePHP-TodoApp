@@ -4,126 +4,7 @@
     <title>Todo App</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            max-width: 800px;
-            margin: 0 auto;
-            padding: 20px;
-        }
-        .todo-form {
-            background: #f5f5f5;
-            padding: 20px;
-            border-radius: 5px;
-            margin-bottom: 30px;
-        }
-        .todo-item {
-            background: white;
-            border: 1px solid #ddd;
-            padding: 15px;
-            margin-bottom: 10px;
-            border-radius: 5px;
-        }
-        .todo-item.completed {
-            background: #e8f5e8;
-            text-decoration: line-through;
-        }
-        .form-group {
-            margin-bottom: 15px;
-        }
-        label {
-            display: block;
-            margin-bottom: 5px;
-            font-weight: bold;
-        }
-        input[type="text"], textarea {
-            width: 100%;
-            padding: 8px;
-            border: 1px solid #ccc;
-            border-radius: 3px;
-            box-sizing: border-box;
-        }
-        textarea {
-            height: 80px;
-            resize: vertical;
-        }
-        button {
-            background: #007bff;
-            color: white;
-            padding: 10px 20px;
-            border: none;
-            border-radius: 3px;
-            cursor: pointer;
-        }
-        button:hover {
-            background: #0056b3;
-        }
-        .todo-title {
-            font-weight: bold;
-            font-size: 1.1em;
-            margin-bottom: 5px;
-        }
-        .todo-content {
-            color: #666;
-            margin-bottom: 10px;
-        }
-        .todo-date {
-            font-size: 0.9em;
-            color: #999;
-        }
-        .todo-actions {
-            margin-top: 10px;
-        }
-        .btn {
-            padding: 5px 10px;
-            border: none;
-            border-radius: 3px;
-            cursor: pointer;
-            text-decoration: none;
-            font-size: 0.9em;
-            margin-right: 5px;
-            display: inline-block;
-        }
-        .btn-edit {
-            background: #28a745;
-            color: white;
-        }
-        .btn-edit:hover {
-            background: #1e7e34;
-        }
-        .btn-delete {
-            background: #dc3545;
-            color: white;
-        }
-        .btn-delete:hover {
-            background: #c82333;
-        }
-        .tag-selector {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 8px;
-        }
-        .tag-button {
-            display: inline-block;
-            cursor: pointer;
-            margin: 0;
-        }
-        .tag-label {
-            background: #e0e0e0;
-            padding: 8px 15px;
-            border-radius: 20px;
-            display: inline-block;
-            transition: all 0.3s ease;
-            user-select: none;
-        }
-        .tag-label:hover {
-            background: #d0d0d0;
-        }
-        .tag-button input:checked + .tag-label {
-            background: #007bff;
-            color: white;
-        }
-    </style>
+    <?= $this->Html->css('todos-index') ?>
 </head>
 <body>
     <h1>Todo App</h1>
@@ -138,7 +19,28 @@
 
             <div class="form-group">
                 <?= $this->Form->label('tags', 'タグ') ?>
-                <div class="tag-selector">
+                <div class="tag-search-field">
+                    <div class="tag-search-row">
+                        <input
+                            type="text"
+                            class="tag-search-input"
+                            id="tag-search-input"
+                            autocomplete="off"
+                            placeholder="タグを入力（2文字以上）"
+                            aria-label="タグ入力"
+                        >
+                        <button
+                            type="button"
+                            class="tag-search-submit"
+                            id="tag-search-button"
+                            aria-label="タグを検索"
+                        >
+                            検索
+                        </button>
+                    </div>
+                    <p class="tag-search-status" id="tag-search-status" role="status" aria-live="polite"></p>
+                </div>
+                <div class="tag-selector" id="tag-selector">
                     <?php foreach ($tags as $tag): ?>
                         <label class="tag-button">
                             <input type="checkbox" name="tags[]" value="<?= $tag['id'] ?>" style="display: none;">
@@ -182,5 +84,151 @@
             <p>まだTodoが登録されていません。</p>
         <?php endif; ?>
     </div>
+    <?php
+    $tagSearchUrl = $this->Url->build(['controller' => 'Tags', 'action' => 'searchByKeyword']);
+    ?>
+    <script>
+    /**
+     * Todo 一覧のタグ検索 UI を初期化する。
+     * キーワードでタグを API 検索し、#tag-selector 内のチェックボックス一覧を差し替える。
+     * 検索実行時点で選択されていたタグは、検索結果に含まれる場合のみ選択状態を維持する。
+     */
+    (function () {
+        const tagSearchApiUrl = <?= json_encode($tagSearchUrl, JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT) ?>;
+        const searchInput = document.getElementById('tag-search-input');
+        const searchButton = document.getElementById('tag-search-button');
+        const statusElement = document.getElementById('tag-search-status');
+        const tagSelector = document.getElementById('tag-selector');
+        if (!searchInput || !searchButton || !tagSelector) {
+            return;
+        }
+
+        /**
+         * 現在オンになっているタグ用チェックボックスの値を、ルックアップ用オブジェクトに集める。
+         * 検索後に DOM を再描画するとき、どの ID をチェックし直すか判断するために使う。
+         *
+         * @returns {Object<string, boolean>} タグ ID（文字列）をキーに、選択中なら true
+         */
+        function getCheckedTagIdLookup() {
+            const checkedTagIdLookup = {};
+            tagSelector.querySelectorAll('input[name="tags[]"]:checked').forEach(function (checkbox) {
+                checkedTagIdLookup[checkbox.value] = true;
+            });
+            return checkedTagIdLookup;
+        }
+
+        /**
+         * 渡されたタグ配列を、#tag-selector 内にチェックボックス付きラベルとして描画する。
+         * 描画前にコンテナを空にするため、既存の選択 UI はすべて置き換わる。
+         *
+         * @param {Array<{id: number|string, name: string}>} tags 表示するタグ
+         * @param {Object<string, boolean>} checkedTagIdLookup ここにキーがある ID のチェックボックスは checked にする
+         */
+        function renderTagCheckboxes(tags, checkedTagIdLookup) {
+            tagSelector.innerHTML = '';
+            tags.forEach(function (tag) {
+                const tagId = String(tag.id);
+                const label = document.createElement('label');
+                label.className = 'tag-button';
+                const checkbox = document.createElement('input');
+                checkbox.type = 'checkbox';
+                checkbox.name = 'tags[]';
+                checkbox.value = tagId;
+                checkbox.style.display = 'none';
+                if (checkedTagIdLookup[tagId]) {
+                    checkbox.checked = true;
+                }
+                const nameSpan = document.createElement('span');
+                nameSpan.className = 'tag-label';
+                nameSpan.textContent = tag.name;
+                label.appendChild(checkbox);
+                label.appendChild(nameSpan);
+                tagSelector.appendChild(label);
+            });
+        }
+
+        /**
+         * 検索の進捗・結果メッセージをステータス要素に表示する。要素が無い場合は何もしない。
+         *
+         * @param {string} [message] 表示する文言。省略または空ならメッセージを消す
+         */
+        function setStatusMessage(message) {
+            if (statusElement) {
+                statusElement.textContent = message || '';
+            }
+        }
+
+        /**
+         * 検索ボタン押下: 入力が 2 文字未満ならバリデーション表示。それ以外はタグ検索 API を呼び、
+         * 返却されたタグ一覧でチェックボックスを再描画する。通信中はボタンを無効化する。
+         */
+        searchButton.addEventListener('click', function () {
+            const query = (searchInput.value || '').trim();
+            setStatusMessage('');
+            if (query.length < 2) {
+                setStatusMessage('検索するには2文字以上入力してください。');
+                return;
+            }
+            
+            const checkedTagIdLookup = getCheckedTagIdLookup();
+            setStatusMessage('検索中…');
+            searchButton.disabled = true;
+            const querySeparator = tagSearchApiUrl.indexOf('?') >= 0 ? '&' : '?';
+            const searchRequestUrl = tagSearchApiUrl + querySeparator + 'query=' + encodeURIComponent(query);
+            fetch(searchRequestUrl, { headers: { 'Accept': 'application/json' }, credentials: 'same-origin' })
+                /**
+                 * HTTP ステータスを確認し、成功時はレスポンス本文を JSON にパースした Promise を返す。
+                 *
+                 * @param {Response} response fetch の応答
+                 */
+                .then(function (response) {
+                    if (!response.ok) {
+                        throw new Error('HTTP ' + response.status);
+                    }
+                    return response.json();
+                })
+                /**
+                 * API の JSON からタグ配列を取り出し、チェックボックス一覧を更新する。
+                 * 件数に応じてステータス文言を切り替える。
+                 *
+                 * @param {Object} responseData パース済みのレスポンスオブジェクト（tags 配列を想定）
+                 */
+                .then(function (responseData) {
+                    const foundTags = responseData.tags && Array.isArray(responseData.tags) ? responseData.tags : [];
+                    renderTagCheckboxes(foundTags, checkedTagIdLookup);
+                    if (foundTags.length === 0) {
+                        setStatusMessage('該当するタグがありません。');
+                    } else {
+                        setStatusMessage(foundTags.length + ' 件のタグが見つかりました。');
+                    }
+                })
+                /**
+                 * ネットワークエラーや HTTP エラー時にユーザー向けメッセージを表示する。
+                 */
+                .catch(function () {
+                    setStatusMessage('検索に失敗しました。もう一度お試しください。');
+                })
+                /**
+                 * 成功・失敗に関わらず検索ボタンを再度有効にする。
+                 */
+                .finally(function () {
+                    searchButton.disabled = false;
+                });
+        });
+
+        /**
+         * 検索入力で Enter を押したとき、フォーム送信ではなく検索ボタンと同じ動きにする。
+         *
+         * @param {KeyboardEvent} event
+         */
+        searchInput.addEventListener('keydown', function (event) {
+            if (event.key === 'Enter') {
+                event.preventDefault();
+                searchButton.click();
+            }
+        });
+
+    })();
+    </script>
 </body>
 </html>

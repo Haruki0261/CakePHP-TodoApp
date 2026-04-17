@@ -3,16 +3,19 @@ declare(strict_types=1);
 
 namespace App\Controller;
 
-// use App\Model\Table\TagsTable;
+use App\Model\Table\TagsTable;
+use App\Model\Table\TodoTagsTable;
 
 /**
  * Todos Controller
-* @property \App\Model\Table\TagsTable $Tags
-* @property \App\Model\Table\TodoTagsTable $TodoTags
  *
+ * @property \App\Model\Table\TodosTable $Todos
  */
 class TodosController extends AppController
 {
+    private TagsTable $Tags;
+    private TodoTagsTable $TodoTags;
+
     public function initialize(): void
     {
         parent::initialize();
@@ -47,6 +50,13 @@ class TodosController extends AppController
     public function edit($id = null)
     {
         $todo = $this->Todos->get($id);
+
+        $this->set(compact('todo'));
+    }
+    
+    public function view($id = null)
+    {
+        $todo = $this->Todos->get($id, ['contain' => ['Tags']]);
 
         $this->set(compact('todo'));
     }
