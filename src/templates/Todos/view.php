@@ -4,102 +4,21 @@
     <title>Todo詳細 - Todo App</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            max-width: 800px;
-            margin: 0 auto;
-            padding: 20px;
-        }
-        .todo-detail {
-            background: white;
-            border: 1px solid #ddd;
-            padding: 30px;
-            border-radius: 5px;
-            margin-bottom: 20px;
-        }
-        .todo-detail.completed {
-            background: #e8f5e8;
-        }
-        .todo-title {
-            font-size: 1.5em;
-            font-weight: bold;
-            margin-bottom: 15px;
-            color: #333;
-        }
-        .todo-content {
-            font-size: 1.1em;
-            line-height: 1.6;
-            color: #666;
-            margin-bottom: 20px;
-            white-space: pre-wrap;
-        }
-        .todo-meta {
-            border-top: 1px solid #eee;
-            padding-top: 15px;
-            color: #999;
-        }
-        .meta-item {
-            margin-bottom: 8px;
-        }
-        .status {
-            display: inline-block;
-            padding: 5px 15px;
-            border-radius: 15px;
-            font-size: 0.9em;
-            font-weight: bold;
-        }
-        .status.pending {
-            background: #fff3cd;
-            color: #856404;
-        }
-        .status.completed {
-            background: #d4edda;
-            color: #155724;
-        }
-        .back-link {
-            display: inline-block;
-            margin-bottom: 20px;
-            color: #007bff;
-            text-decoration: none;
-            font-size: 0.9em;
-        }
-        .back-link:hover {
-            text-decoration: underline;
-        }
-        .back-link:before {
-            content: "← ";
-        }
-        .action-buttons {
-            margin-top: 20px;
-        }
-        .btn {
-            padding: 10px 20px;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            text-decoration: none;
-            font-size: 14px;
-            margin-right: 10px;
-            display: inline-block;
-        }
-        .btn-edit {
-            background: #28a745;
-            color: white;
-        }
-        .btn-edit:hover {
-            background: #1e7e34;
-        }
-    </style>
+    <?= $this->Html->css('todos-view') ?>
 </head>
 <body>
     <a href="/todos" class="back-link">一覧に戻る</a>
-
     <h1>Todo詳細</h1>
-
     <div class="todo-detail <?= $todo->completed ? 'completed' : '' ?>">
         <div class="todo-title"><?= h($todo->title) ?></div>
         <div class="todo-content"><?= h($todo->content) ?></div>
+
+        <div class="todo-tags">
+            <strong>タグ:</strong>
+            <?php foreach ($todo->tags as $tag): ?>
+                <span class="tag"><?= h($tag->name) ?></span>
+            <?php endforeach; ?>
+        </div>
 
         <div class="todo-meta">
             <div class="meta-item">

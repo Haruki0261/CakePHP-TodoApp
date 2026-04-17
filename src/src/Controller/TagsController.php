@@ -3,6 +3,8 @@ declare(strict_types=1);
 
 namespace App\Controller;
 
+use App\Service\TagsService;
+
 /**
  * Tags Controller
  *
@@ -10,6 +12,14 @@ namespace App\Controller;
  */
 class TagsController extends AppController
 {
+    private TagsService $tagsService;
+
+    public function initialize(): void
+    {
+        parent::initialize();
+        $this->tagsService = new TagsService($this->Tags);
+    }
+
     /**
      * Index method
      *
@@ -24,16 +34,46 @@ class TagsController extends AppController
     }
 
     /**
-     * View method
+     * Tag 検索クエリを Todos の index に引き渡す。
      *
-     * @param string|null $id Tag id.
-     * @return \Cake\Http\Response|null|void Renders view
-     * @throws \Cake\Datasource\Exception\RecordNotFoundException When record not found.
+     * @return \Cake\Http\Response|null
      */
-    public function view($id = null)
+    public function search()
     {
-        $tag = $this->Tags->get($id, ['contain' => ['Todos']]);
-        $this->set(compact('tag'));
+        $tag = $this->request->getQuery('Tag');
+        if (is_string($tag) && $tag !== '') {
+            return $this->redirect([
+                'controller' => 'Todos',
+                'action' => 'index',
+                '?' => ['Tag' => $tag],
+            ]);
+        }
+
+        return $this->redirect(['controller' => 'Todos', 'action' => 'index']);
+    }
+
+    /**
+     * 名前の部分一致でタグ候補を JSON で返す（補完 API 用）。
+     *
+     * @return \Cake\Http\Response|null|void
+     */
+    public function searchByKeyword()
+    {
+        $queryParams = $this->request->getQuery('query');
+
+        if (!is_string($queryParams) || $queryParams === '') {
+            $tags = [];
+        } else {
+            $tags = array_map(
+                static fn ($tag) => ['id' => $tag->id, 'name' => $tag->name],
+                $this->tagsService->getTagsByName($queryParams)
+            );
+        }
+
+        $this->set(compact('tags'));
+        $this->viewBuilder()
+            ->setClassName('Json')
+            ->setOption('serialize', ['tags']);
     }
 
     /**
