@@ -73,8 +73,14 @@
                         </a>
                     </div>
                     <div class="todo-content"><?= h($todo->content) ?></div>
-                    <div class="todo-date">作成日: <?= $todo->modified->format('Y-m-d H:i') ?></div>
+                    <div class="todo-date">作成日: <?= $todo->created->format('Y-m-d H:i') ?></div>
+                    <div class="todo-date">更新日: <?= $todo->modified->format('Y-m-d H:i') ?></div>
                     <div class="todo-actions">
+                        <?= $this->Form->postLink(
+                            $todo->completed ? '未完了に戻す' : '完了にする',
+                            ['action' => 'toggleComplete', $todo->id],
+                            ['class' => 'btn btn-toggle']
+                        ) ?>
                         <a href="/todos/edit/<?= $todo->id ?>" class="btn btn-edit">編集</a>
                         <?= $this->Form->postLink('削除', ['action' => 'delete', $todo->id], ['class' => 'btn btn-delete']) ?>
                     </div>
@@ -83,7 +89,7 @@
         <?php else: ?>
             <p>まだTodoが登録されていません。</p>
         <?php endif; ?>
-    </div>
+</div>
     <?php
     $tagSearchUrl = $this->Url->build(['controller' => 'Tags', 'action' => 'searchByKeyword']);
     ?>
@@ -169,7 +175,7 @@
                 setStatusMessage('検索するには2文字以上入力してください。');
                 return;
             }
-            
+
             const checkedTagIdLookup = getCheckedTagIdLookup();
             setStatusMessage('検索中…');
             searchButton.disabled = true;

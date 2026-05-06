@@ -91,6 +91,13 @@ button:hover {
 .btn-delete:hover {
     background: #c82333;
 }
+.btn-toggle {
+    background: #6f42c1;
+    color: white;
+}
+.btn-toggle:hover {
+    background: #5a32a3;
+}
 .tag-search-field {
     position: relative;
     margin-bottom: 10px;

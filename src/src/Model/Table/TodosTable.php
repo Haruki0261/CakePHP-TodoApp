@@ -92,4 +92,22 @@ class TodosTable extends Table
 
         return $this->delete($todo);
     }
+
+    /**
+     *
+     * @param int $id 
+     * @return \App\Model\Entity\Todo|false The saved entity, or false on save failure
+     * @throws \Cake\Datasource\Exception\RecordNotFoundException When the id does not exist
+     */
+    public function toggleCompleted(int $id)
+    {
+        $todo = $this->get($id);
+        $todo->completed = !$todo->completed;
+
+        if ($this->save($todo, ['validate' => false])) {
+            return $todo;
+        }
+
+        return false;
+    }
 }
