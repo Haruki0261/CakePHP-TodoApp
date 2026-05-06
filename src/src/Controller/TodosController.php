@@ -5,6 +5,7 @@ namespace App\Controller;
 
 use App\Model\Table\TagsTable;
 use App\Model\Table\TodoTagsTable;
+use Cake\Datasource\Exception\RecordNotFoundException;
 
 /**
  * Todos Controller
@@ -53,7 +54,7 @@ class TodosController extends AppController
 
         $this->set(compact('todo'));
     }
-    
+
     public function view($id = null)
     {
         $todo = $this->Todos->get($id, ['contain' => ['Tags']]);
@@ -97,5 +98,41 @@ class TodosController extends AppController
 
         return $this->redirect(['action' => 'index']);
     }
-}
 
+    /**
+     * Toggle completed flag for one todo (POST). Flash + redirect to index.
+     *
+     * @param string|int|null $id Todo id from route
+     * @return \Cake\Http\Response|null
+     */
+    public function toggleComplete($id = null)
+    {
+        $this->request->allowMethod(['post', 'patch']);
+
+        $id = $this->request->getParam('id') ?? $id;
+        if ($id === null || $id === '' || !ctype_digit((string)$id)) {
+            $this->Flash->error((string)__('Invalid todo id.'));
+
+            return $this->redirect(['action' => 'index']);
+        }
+
+        try {
+            $todo = $this->Todos->toggleCompleted((int)$id);
+        } catch (RecordNotFoundException $e) {
+            $this->Flash->error((string)__('Todo not found.'));
+
+            return $this->redirect(['action' => 'index']);
+        }
+
+        if ($todo === false) {
+            $this->Flash->error((string)__('Unable to update the todo.'));
+
+            return $this->redirect(['action' => 'index']);
+        }
+
+        $this->Flash->success((string)__('Todo has been updated.'));
+
+        return $this->redirect(['action' => 'index']);
+    }
+
+}

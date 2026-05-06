@@ -3,7 +3,6 @@ declare(strict_types=1);
 
 namespace App\Test\TestCase\Controller;
 
-use App\Controller\TodosController;
 use Cake\TestSuite\IntegrationTestTrait;
 use Cake\TestSuite\TestCase;
 
@@ -17,6 +16,15 @@ class TodosControllerTest extends TestCase
     use IntegrationTestTrait;
 
     /**
+     * @return void
+     */
+    protected function setUp(): void
+    {
+        parent::setUp();
+        $this->enableCsrfToken();
+    }
+
+    /**
      * Fixtures
      *
      * @var list<string>
@@ -24,39 +32,6 @@ class TodosControllerTest extends TestCase
     protected array $fixtures = [
         'app.Todos',
     ];
-
-    /**
-     * Test index method
-     *
-     * @return void
-     * @link \App\Controller\TodosController::index()
-     */
-    public function testIndex(): void
-    {
-        $this->markTestIncomplete('Not implemented yet.');
-    }
-
-    /**
-     * Test view method
-     *
-     * @return void
-     * @link \App\Controller\TodosController::view()
-     */
-    public function testView(): void
-    {
-        $this->markTestIncomplete('Not implemented yet.');
-    }
-
-    /**
-     * Test add method
-     *
-     * @return void
-     * @link \App\Controller\TodosController::add()
-     */
-    public function testAdd(): void
-    {
-        $this->markTestIncomplete('Not implemented yet.');
-    }
 
     /**
      * Test edit method
@@ -85,20 +60,47 @@ class TodosControllerTest extends TestCase
             'completed' => true
         ];
 
-        $this->patch('/todos/update/1', $data);
+        $this->post('/todos/update/1', $data);
         $this->assertResponseCode(302);
-        $this->assertRedirect('/todos');
+        $this->assertRedirect('/');
         $this->assertFlashMessage('Todo has been updated.');
     }
 
     /**
-     * Test delete method
+     * Test toggleComplete HTML flow
      *
      * @return void
-     * @link \App\Controller\TodosController::delete()
      */
-    public function testDelete(): void
+    public function testToggleCompleteSuccess(): void
     {
-        $this->markTestIncomplete('Not implemented yet.');
+        $this->post('/todos/toggle-complete/1');
+        $this->assertResponseCode(302);
+        $this->assertRedirect('/');
+        $this->assertFlashMessage('Todo has been updated.');
+
+        $todos = $this->getTableLocator()->get('Todos');
+        $this->assertTrue($todos->get(1)->completed);
+    }
+
+    /**
+     * @return void
+     */
+    public function testToggleCompleteNotFound(): void
+    {
+        $this->post('/todos/toggle-complete/99999');
+        $this->assertResponseCode(302);
+        $this->assertRedirect('/');
+        $this->assertFlashMessage('Todo not found.');
+    }
+
+    /**
+     * @return void
+     */
+    public function testToggleCompleteInvalidId(): void
+    {
+        $this->post('/todos/toggle-complete/abc');
+        $this->assertResponseCode(302);
+        $this->assertRedirect('/');
+        $this->assertFlashMessage('Invalid todo id.');
     }
 }
