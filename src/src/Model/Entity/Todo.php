@@ -29,4 +29,14 @@ class Todo extends Entity
         'created' => true,
         'modified' => true,
     ];
+
+    /**
+     * Human-readable completion label for display.
+     *
+     * @return string
+     */
+    public function getCompletionLabel(): string
+    {
+        return $this->completed ? '完了' : '未完了';
+    }
 }
