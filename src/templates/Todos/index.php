@@ -61,6 +61,7 @@
 
     <div class="todos-list">
         <h2>Todo一覧</h2>
+        <p class="todos-incomplete-summary" data-incomplete-count="<?= (int)$incompleteCount ?>">未完了: <?= h((string)$incompleteCount) ?>件</p>
         <div>
             <a href="/tags/add">タグ追加</a>
         </div>

@@ -28,8 +28,9 @@ class TodosController extends AppController
     {
         $todos = $this->Todos->find()->contain(['Tags'])->orderByDesc('created');
         $tags = $this->Tags->find()->orderByDesc('created')->toArray();
+        $incompleteCount = $this->Todos->countIncomplete();
 
-        $this->set(compact('todos', 'tags'));
+        $this->set(compact('todos', 'tags', 'incompleteCount'));
     }
 
     public function create()

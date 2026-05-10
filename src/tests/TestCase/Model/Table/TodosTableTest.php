@@ -47,4 +47,14 @@ class TodosTableTest extends TestCase
         $Todos = $this->getTableLocator()->get('Todos');
         $Todos->toggleCompleted(99_999);
     }
+
+    /**
+     * @return void
+     */
+    public function testCountIncompleteIncludesOnlyOpenTodos(): void
+    {
+        $Todos = $this->getTableLocator()->get('Todos');
+
+        $this->assertSame(2, $Todos->countIncomplete());
+    }
 }
