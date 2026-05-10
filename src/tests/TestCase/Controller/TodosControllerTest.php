@@ -47,6 +47,19 @@ class TodosControllerTest extends TestCase
     }
 
     /**
+     * Index lists incomplete count from TodosTable::countIncomplete()
+     *
+     * @return void
+     */
+    public function testIndexDisplaysIncompleteCount(): void
+    {
+        $this->get('/');
+        $this->assertResponseOk();
+        $this->assertResponseContains('未完了: 2件');
+        $this->assertResponseContains('data-incomplete-count="2"');
+    }
+
+    /**
      * Test update method
      *
      * @return void

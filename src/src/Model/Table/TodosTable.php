@@ -94,6 +94,16 @@ class TodosTable extends Table
     }
 
     /**
+     * 未完了（completed が false）の Todo 件数を返す。
+     *
+     * @return int
+     */
+    public function countIncomplete(): int
+    {
+        return $this->find()->where(['completed' => false])->count();
+    }
+
+    /**
      *
      * @param int $id 
      * @return \App\Model\Entity\Todo|false The saved entity, or false on save failure
