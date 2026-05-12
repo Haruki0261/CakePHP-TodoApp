@@ -31,6 +31,9 @@ require dirname(__DIR__) . '/vendor/autoload.php';
 
 require dirname(__DIR__) . '/config/bootstrap.php';
 
+// app_local.php may enable Open-Meteo; keep PHPUnit off the network here.
+Configure::write('Weather.enabled', false);
+
 if (empty($_SERVER['HTTP_HOST']) && !Configure::read('App.fullBaseUrl')) {
     Configure::write('App.fullBaseUrl', 'http://localhost');
 }

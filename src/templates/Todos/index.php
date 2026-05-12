@@ -9,6 +9,10 @@
 <body>
     <h1>Todo App</h1>
 
+    <?php if (!empty($weatherAdvice)): ?>
+        <p class="weather-motivation-advice"><?= h($weatherAdvice) ?></p>
+    <?php endif; ?>
+
     <div class="todo-form">
         <h2>新しいTodoを追加</h2>
         <?= $this->Form->create(null, ['url' => ['action' => 'create']]) ?>
