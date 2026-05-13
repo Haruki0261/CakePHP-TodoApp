@@ -455,4 +455,15 @@ return [
         'errorLevel' => null,
         'fixtureStrategy' => null,
     ],
+
+    /*
+     * Current weather via Open-Meteo (API key not required).
+     * See https://open-meteo.com/en/docs
+     */
+    'Weather' => [
+        'enabled' => filter_var(env('WEATHER_ENABLED', false), FILTER_VALIDATE_BOOLEAN),
+        'latitude' => (float)env('WEATHER_LATITUDE', '35.6895'),
+        'longitude' => (float)env('WEATHER_LONGITUDE', '139.6917'),
+        'timeout' => max(1, (int)env('WEATHER_TIMEOUT', '5')),
+    ],
 ];

@@ -16,11 +16,16 @@ declare(strict_types=1);
  */
 namespace App;
 
+use App\Service\Weather\CurrentWeatherCodeProviderInterface;
+use App\Service\Weather\NullCurrentWeatherCodeProvider;
+use App\Service\Weather\OpenMeteoCurrentWeatherCodeProvider;
+use App\Service\Weather\WeatherMotivationMessageBuilder;
 use Cake\Core\Configure;
 use Cake\Core\ContainerInterface;
 use Cake\Datasource\FactoryLocator;
 use Cake\Error\Middleware\ErrorHandlerMiddleware;
 use Cake\Http\BaseApplication;
+use Cake\Http\Client;
 use Cake\Http\Middleware\BodyParserMiddleware;
 use Cake\Http\Middleware\CsrfProtectionMiddleware;
 use Cake\Http\MiddlewareQueue;
@@ -101,5 +106,20 @@ class Application extends BaseApplication
      */
     public function services(ContainerInterface $container): void
     {
+        $container->add(CurrentWeatherCodeProviderInterface::class, function (): CurrentWeatherCodeProviderInterface {
+            $weatherConfig = Configure::read('Weather', []);
+            $enabled = $weatherConfig['enabled'] ?? false;
+            if (!$enabled) {
+                return new NullCurrentWeatherCodeProvider();
+            }
+
+            $timeout = (int)($weatherConfig['timeout'] ?? 5);
+            $latitude = (float)($weatherConfig['latitude'] ?? 35.6895);
+            $longitude = (float)($weatherConfig['longitude'] ?? 139.6917);
+            $httpClient = new Client(['timeout' => max(1, $timeout)]);
+
+            return new OpenMeteoCurrentWeatherCodeProvider($latitude, $longitude, $httpClient);
+        });
+        $container->add(WeatherMotivationMessageBuilder::class, WeatherMotivationMessageBuilder::class);
     }
 }

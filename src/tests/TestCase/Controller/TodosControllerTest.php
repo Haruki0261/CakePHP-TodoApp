@@ -3,6 +3,8 @@ declare(strict_types=1);
 
 namespace App\Test\TestCase\Controller;
 
+use App\Service\Weather\CurrentWeatherCodeProviderInterface;
+use App\Test\Stub\FixedWeatherCodeProvider;
 use Cake\TestSuite\IntegrationTestTrait;
 use Cake\TestSuite\TestCase;
 
@@ -57,6 +59,41 @@ class TodosControllerTest extends TestCase
         $this->assertResponseOk();
         $this->assertResponseContains('未完了: 2件');
         $this->assertResponseContains('data-incomplete-count="2"');
+    }
+
+    /**
+     * Index shows motivation copy when a stub weather provider returns clear sky (WMO 0).
+     *
+     * @return void
+     */
+    public function testIndexDisplaysWeatherMotivationAdviceWhenClear(): void
+    {
+        $this->mockService(
+            CurrentWeatherCodeProviderInterface::class,
+            fn () => new FixedWeatherCodeProvider(0)
+        );
+
+        $this->get('/');
+        $this->assertResponseOk();
+        $this->assertResponseContains('class="weather-motivation-advice"');
+        $this->assertResponseContains('今日は晴れなので、外でのタスクも捗りますよ！');
+    }
+
+    /**
+     * Index shows fallback copy when the provider returns null.
+     *
+     * @return void
+     */
+    public function testIndexDisplaysWeatherMotivationFallbackWhenProviderReturnsNull(): void
+    {
+        $this->mockService(
+            CurrentWeatherCodeProviderInterface::class,
+            fn () => new FixedWeatherCodeProvider(null)
+        );
+
+        $this->get('/');
+        $this->assertResponseOk();
+        $this->assertResponseContains('今日の天気を取得できませんでした。');
     }
 
     /**

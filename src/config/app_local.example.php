@@ -94,4 +94,14 @@ return [
             'url' => env('EMAIL_TRANSPORT_DEFAULT_URL', null),
         ],
     ],
+
+    /*
+     * Open-Meteo forecast (optional). Omit or set enabled false to skip HTTP (Null provider).
+     */
+    //'Weather' => [
+    //    'enabled' => true,
+    //    'latitude' => 35.6895,
+    //    'longitude' => 139.6917,
+    //    'timeout' => 5,
+    //],
 ];

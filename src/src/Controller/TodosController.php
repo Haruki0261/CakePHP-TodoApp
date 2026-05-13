@@ -5,6 +5,8 @@ namespace App\Controller;
 
 use App\Model\Table\TagsTable;
 use App\Model\Table\TodoTagsTable;
+use App\Service\Weather\CurrentWeatherCodeProviderInterface;
+use App\Service\Weather\WeatherMotivationMessageBuilder;
 use Cake\Datasource\Exception\RecordNotFoundException;
 
 /**
@@ -24,13 +26,16 @@ class TodosController extends AppController
         $this->TodoTags = $this->fetchTable('TodoTags');
     }
 
-    public function index()
-    {
+    public function index(
+        CurrentWeatherCodeProviderInterface $weatherProvider,
+        WeatherMotivationMessageBuilder $weatherMessageBuilder
+    ): void {
         $todos = $this->Todos->find()->contain(['Tags'])->orderByDesc('created');
         $tags = $this->Tags->find()->orderByDesc('created')->toArray();
         $incompleteCount = $this->Todos->countIncomplete();
+        $weatherAdvice = $weatherMessageBuilder->build($weatherProvider->getWeatherCode());
 
-        $this->set(compact('todos', 'tags', 'incompleteCount'));
+        $this->set(compact('todos', 'tags', 'incompleteCount', 'weatherAdvice'));
     }
 
     public function create()
