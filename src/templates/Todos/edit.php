@@ -27,7 +27,7 @@
             font-weight: bold;
             color: #333;
         }
-        input[type="text"], textarea {
+        input[type="text"], input[type="date"], textarea {
             width: 100%;
             padding: 12px;
             border: 1px solid #ddd;
@@ -111,6 +111,15 @@
                 'type' => 'textarea',
                 'label' => '内容',
                 'class' => 'form-control'
+            ]) ?>
+        </div>
+
+        <div class="form-group">
+            <?= $this->Form->control('due_date', [
+                'type' => 'date',
+                'label' => '期限',
+                'empty' => true,
+                'class' => 'form-control',
             ]) ?>
         </div>
 
