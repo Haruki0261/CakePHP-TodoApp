@@ -62,6 +62,10 @@ class TodosTable extends Table
             ->boolean('completed')
             ->allowEmptyString('completed');
 
+        $validator
+            ->date('due_date')
+            ->allowEmptyDate('due_date');
+
         return $validator;
     }
 

@@ -21,12 +21,26 @@
         </div>
 
         <div class="todo-meta">
+            <?php
+            $priorityLabel = $todo->getAutoPriorityLabel();
+            ?>
             <div class="meta-item">
                 <strong>ステータス:</strong>
                 <span class="status <?= $todo->completed ? 'completed' : 'pending' ?>">
                     <?= $todo->completed ? '完了' : '未完了' ?>
                 </span>
             </div>
+            <?php if ($priorityLabel !== ''): ?>
+                <div class="meta-item">
+                    <strong>優先度:</strong>
+                    <span class="todo-priority todo-priority-high"><?= h($priorityLabel) ?></span>
+                </div>
+            <?php endif; ?>
+            <?php if ($todo->due_date !== null): ?>
+                <div class="meta-item">
+                    <strong>期限:</strong> <?= h($todo->due_date->format('Y年m月d日')) ?>
+                </div>
+            <?php endif; ?>
             <div class="meta-item">
                 <strong>作成日:</strong> <?= $todo->created->format('Y年m月d日 H:i') ?>
             </div>

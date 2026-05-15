@@ -55,6 +55,11 @@
             </div>
 
             <div class="form-group">
+                <?= $this->Form->label('due_date', '期限') ?>
+                <?= $this->Form->date('due_date', ['empty' => true]) ?>
+            </div>
+
+            <div class="form-group">
                 <?= $this->Form->label('content', '内容') ?>
                 <?= $this->Form->textarea('content', ['required' => true]) ?>
             </div>
@@ -71,13 +76,22 @@
         </div>
         <?php if (!empty($todos)): ?>
             <?php foreach ($todos as $todo): ?>
+                <?php
+                $priorityLabel = $todo->getAutoPriorityLabel();
+                ?>
                 <div class="todo-item <?= $todo->completed ? 'completed' : '' ?>">
                     <div class="todo-title">
                         <a href="/todos/view/<?= $todo->id ?>" style="color: inherit; text-decoration: none;">
                             <?= h($todo->title) ?>
                         </a>
+                        <?php if ($priorityLabel !== ''): ?>
+                            <span class="todo-priority todo-priority-high"><?= h($priorityLabel) ?></span>
+                        <?php endif; ?>
                     </div>
                     <div class="todo-content"><?= h($todo->content) ?></div>
+                    <?php if ($todo->due_date !== null): ?>
+                        <div class="todo-date">期限: <?= h($todo->due_date->format('Y-m-d')) ?></div>
+                    <?php endif; ?>
                     <div class="todo-date">作成日: <?= $todo->created->format('Y-m-d H:i') ?></div>
                     <div class="todo-date">更新日: <?= $todo->modified->format('Y-m-d H:i') ?></div>
                     <div class="todo-actions">

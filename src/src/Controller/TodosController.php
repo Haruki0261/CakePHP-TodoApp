@@ -42,13 +42,15 @@ class TodosController extends AppController
     {
         if ($this->request->is('post')) {
             $todo = $this->Todos->createTodo($this->request->getData());
-            $tags = $this->request->getData('tags');
-
-            foreach($tags as $tag) {
-                $this->TodoTags->createTodoTag((int)$todo->id, (int)$tag);
+            if ($todo) {
+                $tags = $this->request->getData('tags') ?? [];
+                foreach ((array)$tags as $tag) {
+                    $this->TodoTags->createTodoTag((int)$todo->id, (int)$tag);
+                }
+                $this->Flash->success(__('Todo has been saved.'));
+            } else {
+                $this->Flash->error(__('Unable to save the todo.'));
             }
-
-            $this->Flash->success(__('Todo has been saved.'));
         }
 
         return $this->redirect(['action' => 'index']);

@@ -37,6 +37,18 @@ body {
 .meta-item {
     margin-bottom: 8px;
 }
+.todo-priority {
+    display: inline-block;
+    padding: 4px 12px;
+    border-radius: 14px;
+    font-size: 0.85em;
+    font-weight: bold;
+}
+.todo-priority-high {
+    background: #f8d7da;
+    color: #721c24;
+    border: 1px solid #f5c6cb;
+}
 .status {
     display: inline-block;
     padding: 5px 15px;
